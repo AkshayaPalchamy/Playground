@@ -4,8 +4,9 @@ using Playground.Api.Models;
 
 namespace Playground.Api
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
+    [ApiExplorerSettings(GroupName = "product")]
     public class ProductsController : ControllerBase
     {
         private static readonly List<Product> Products = new()
@@ -19,7 +20,7 @@ namespace Playground.Api
         {
             return Ok(Products);
         }
-
+/*
         //POST
         [HttpPost]
         public IActionResult AddProducts(int id, [FromBody] Product products)
@@ -48,6 +49,6 @@ namespace Playground.Api
             if (Products == null) return NotFound();
             Products.Remove(products);
             return NoContent();
-        }
+        }*/
     }
 }

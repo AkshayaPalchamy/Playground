@@ -4,6 +4,7 @@ namespace Playground.Api;
 
 [ApiController]
 [Route("api/[controller]")]
+[ApiExplorerSettings(GroupName = "book")]
 public class BooksController : ControllerBase
 {
 	private static readonly List<Book> books = new()
