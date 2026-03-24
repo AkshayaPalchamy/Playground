@@ -18,6 +18,11 @@ builder.Services.AddSwaggerGen(c =>
         Title = "Product API",
         Version = "v1"
     });
+    c.SwaggerDoc("FileUpload", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "Product API",
+        Version = "v1"
+    });
 
     c.DocInclusionPredicate((doc_name, api_desc) =>
     {
@@ -39,6 +44,7 @@ app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/book/swagger.json", "Book API");
     c.SwaggerEndpoint("/swagger/product/swagger.json", "Product API");
+    c.SwaggerEndpoint("/swagger/FileUpload/swagger.json", "Document API");
 
     c.RoutePrefix = string.Empty;
 });
