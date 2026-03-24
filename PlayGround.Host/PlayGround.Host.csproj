@@ -1,4 +1,4 @@
-<Project Sdk="Aspire.AppHost.Sdk/13.1.0">
+﻿<Project Sdk="Aspire.AppHost.Sdk/13.1.0">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\src\apps\Playground.Api\Playground.Api.csproj" />
+    <ProjectReference Include="..\src\web\Playground.web\Playground.web.csproj" />
   </ItemGroup>
 
 </Project>

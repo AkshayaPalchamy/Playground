@@ -1,0 +1,161 @@
+﻿@page "/fileupload"
+@inject IHttpClientFactory HttpClientFactory
+@rendermode InteractiveServer
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+
+                <div class="card-header bg-primary text-white text-center">
+                    <h4>Document Upload</h4>
+                </div>
+
+                <div class="card-body">
+
+                    @* Success Message *@
+                    @if (!string.IsNullOrEmpty(successMessage))
+                    {
+                        <div class="alert alert-success">
+                            @successMessage
+                        </div>
+                    }
+
+                    @* Error Message *@
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger">
+                            @errorMessage
+                        </div>
+                    }
+
+                    @* Role Dropdown *@
+                    <div class="mb-3">
+                        <label class="form-label">Role</label>
+                        <select class="form-select" @bind="selectedRole">
+                            <option value="">-- Select --</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Developer">Developer</option>
+                        </select>
+                    </div>
+
+                    @* Description *@
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <input type="text"
+                               class="form-control"
+                               @bind="description"
+                               placeholder="Enter description" />
+                    </div>
+
+                    @* File Choose *@
+                    <div class="mb-3">
+                        <label class="form-label">Choose File</label>
+                        <InputFile class="form-control"
+                                   OnChange="HandleFileSelected" />
+                        @if (selectedFile != null)
+                        {
+                            <small class="text-muted">
+                                @selectedFile.Name
+                            </small>
+                        }
+                    </div>
+
+                    @* Upload Button *@
+                    <button class="btn btn-primary w-100"
+                            @onclick="UploadFile"
+                            disabled="@isUploading">
+                        @if (isUploading)
+                        {
+                            <span>Uploading...</span>
+                        }
+                        else
+                        {
+                            <span>Upload</span>
+                        }
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    // Variables
+    private string selectedRole = "";
+    private string description = "";
+    private IBrowserFile? selectedFile;
+    private bool isUploading = false;
+    private string successMessage = "";
+    private string errorMessage = "";
+
+    // File select aana ippi varum
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+        successMessage = "";
+        errorMessage = "";
+    }
+
+    // Upload button click aana ippi varum
+    private async Task UploadFile()
+    {
+        // Validation check
+        if (selectedFile == null)
+        {
+            errorMessage = "Please select a file!";
+            return;
+        }
+        if (string.IsNullOrEmpty(selectedRole))
+        {
+            errorMessage = "Please select a role!";
+            return;
+        }
+
+        isUploading = true;
+
+        try
+        {
+            // Form data prepare pannuvom
+            var content = new MultipartFormDataContent();
+
+            var fileStream = selectedFile.OpenReadStream(10 * 1024 * 1024);
+            var fileContent = new StreamContent(fileStream);
+            fileContent.Headers.ContentType =
+                new System.Net.Http.Headers.MediaTypeHeaderValue(
+                    selectedFile.ContentType ?? "application/octet-stream"
+                );
+
+            // Form fields add pannuvom
+            content.Add(fileContent, "File", selectedFile.Name);
+            content.Add(new StringContent(selectedRole), "Role");
+            content.Add(new StringContent(description), "Description");
+
+            // API ku send pannuvom
+            var client = HttpClientFactory.CreateClient("PlaygroundAPI");
+            var response = await client.PostAsync("api/Document/Upload", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                successMessage = $"{selectedFile.Name} uploaded successfully!";
+                // Reset pannuvom
+                selectedFile = null;
+                selectedRole = "";
+                description = "";
+            }
+            else
+            {
+                errorMessage = "Upload failed! Try again.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            isUploading = false;
+        }
+    }
+}
