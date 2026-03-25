@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Playground.Api.Data;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -20,7 +22,7 @@ builder.Services.AddSwaggerGen(c =>
     });
     c.SwaggerDoc("FileUpload", new Microsoft.OpenApi.Models.OpenApiInfo
     {
-        Title = "Product API",
+        Title = "Document API",
         Version = "v1"
     });
 
