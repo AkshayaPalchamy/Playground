@@ -1,19 +1,40 @@
 ﻿using System.Data.Entity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Playground.Api.Data;
 using Playground.Api.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace Playground.Api.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     [ApiExplorerSettings(GroupName = "FileUpload")]
     public class DocumentController : ControllerBase
     {
         private readonly string _baseUploadFolder;
         private readonly AppDbContext _context;
+
+        [HttpGet("list/admin")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAdminFiles()
+        {
+            var files = await _context.Documents
+                .Where(d => d.Role == "Admin")
+                .ToListAsync();
+            return Ok(files);
+        }
+
+        [HttpGet("list/developer")]
+        [Authorize(Roles = "Developer")]
+        public async Task<IActionResult> GetDeveloperFiles()
+        {
+            var files = await _context.Documents
+                .Where(d => d.Role == "Developer")
+                .ToListAsync();
+            return Ok(files);
+        }
 
         public DocumentController(IWebHostEnvironment env, AppDbContext context)
         {
