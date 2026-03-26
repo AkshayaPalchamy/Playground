@@ -9,8 +9,9 @@ public class BooksController : ControllerBase
 {
 	private static readonly List<Book> books = new()
 	                                           {
-		                                           new Book { Id = 1, Title = "API Basics", Author = "Akshaya" }
-	                                           };
+		                                           new Book { Id = 1, Title = "API Basics", Author = "Akshaya" },
+                                                    new Book { Id = 2, Title = "API Basics", Author = "Akshaya" }
+                                               };
 
 	//GET
 	[HttpGet]
